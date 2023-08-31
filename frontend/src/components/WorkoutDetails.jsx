@@ -2,9 +2,16 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { useNavigate } from 'react-router-dom';
 
 const WorkoutDetails = ({ workout }) => {
   const { dispatch } = useWorkoutsContext();
+  const navigate = useNavigate()
+
+  const handleNavigate = () => {
+    let path = `/${workout._id}`
+    navigate(path)
+  }
 
   // Editing State
   const [isEditing, setIsEditing] = useState(false);
@@ -127,6 +134,7 @@ const WorkoutDetails = ({ workout }) => {
               </span>
             </>
           )}
+          <button onClick={handleNavigate}>Read More</button>
         </>
       )}
     </div>
