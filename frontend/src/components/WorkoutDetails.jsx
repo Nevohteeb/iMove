@@ -1,28 +1,25 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
-import { useNavigate } from 'react-router-dom';
+
+const baseURL = import.meta.env.VITE_API_BASE_URL
+const appURL = import.meta.env.VITE_APP_URL
 
 const WorkoutDetails = ({ workout }) => {
   const { dispatch } = useWorkoutsContext();
-  const navigate = useNavigate()
+  const user = JSON.parse(localStorage.getItem('user'));
+  const user_id = user.email;
 
-  const handleNavigate = () => {
-    let path = `/${workout._id}`
-    navigate(path)
-  }
-
-  // Editing State
   const [isEditing, setIsEditing] = useState(false);
-  // State for our edit form
   const [editTitle, setEditTitle] = useState(workout.title);
   const [editLoad, setEditLoad] = useState(workout.load);
   const [editReps, setEditReps] = useState(workout.reps);
+  const [commentText, setCommentText] = useState('');
+  const [showComments, setShowComments] = useState(false);
 
   const handleDelete = async () => {
-    const response = await axios.delete(`http://localhost:4000/api/workouts/${workout._id}`);
-
+    const response = await axios.delete(`${baseURL}/workouts/${workout._id}`);
     const json = await response.data;
     if (response.status === 200) {
       console.log(json);
@@ -42,17 +39,15 @@ const WorkoutDetails = ({ workout }) => {
   };
 
   const handleSubmitEdit = async () => {
-    // defining the object to send up
     const updatedWorkout = {
       title: editTitle,
       load: editLoad,
       reps: editReps,
     };
 
-    // axios
     try {
       const response = await axios.patch(
-        `http://localhost:4000/api/workouts/${workout._id}`,
+        `${baseURL}/workouts/${workout._id}`,
         updatedWorkout
       );
 
@@ -67,8 +62,39 @@ const WorkoutDetails = ({ workout }) => {
     }
   };
 
-  const user = JSON.parse(localStorage.getItem('user'));
-  const user_id = user.email; // Make sure this is the correct property that holds the user ID
+  const handleAddComment = async () => {
+    try {
+        const response = await axios.post(
+            `${baseURL}/comments/workouts/${workout._id}/comments`,
+            {
+                text: commentText,
+                user_id: user_id,
+            }
+        );
+
+        if (response.status === 201) {
+            // Update the component state to include the new comment
+            const newComment = response.data;
+            const updatedComments = [...workout.comments, newComment];
+            const updatedWorkout = { ...workout, comments: updatedComments };
+
+            // Dispatch the updated workout data
+            dispatch({ type: 'UPDATE_WORKOUT', payload: updatedWorkout });
+
+            setCommentText('');
+        }
+    } catch (error) {
+        console.error('Error Adding Comment: ', error);
+    }
+};
+
+// Function to split the email address
+const getEmailCharactersBeforeAtSymbol = (email) => {
+  const delimiter = '@';
+  const parts = email.split(delimiter);
+  return parts.length > 1 ? parts[0] : '';
+};
+
 
   return (
     <div className="workout-details">
@@ -104,7 +130,7 @@ const WorkoutDetails = ({ workout }) => {
           {workout.image && (
             <img 
               className='workout-image' 
-              src={`http://localhost:4000/public/uploads/${workout.image}`}
+              src={`${appURL}/public/uploads/${workout.image}`}
               alt={workout.title}
             />
           )}
@@ -115,28 +141,65 @@ const WorkoutDetails = ({ workout }) => {
             <strong>Reps:</strong> {workout.reps}
           </p>
           <p>
-            {formatDistanceToNow(new Date(workout.createdAt), {
+            <strong>Posted:</strong> {formatDistanceToNow(new Date(workout.createdAt), {
               includeSeconds: true,
             })}{' '}
             ago
           </p>
           <p>
             <strong>Created by: </strong>
-            {workout.user_id}
+            {getEmailCharactersBeforeAtSymbol(workout.user_id)}
           </p>
           {workout.user_id === user_id && (
             <>
               <span className='delete' onClick={handleDelete}>
-                <i className='fa-solid fa-ban'></i>
+                <i className='fa-solid fa-trash'></i>
               </span>
               <span className='edit' onClick={handleEdit}>
                 <i className='fa-solid fa-pen'></i>
               </span>
             </>
           )}
-          <button onClick={handleNavigate}>Read More</button>
+          <button onClick={() => {
+            setShowComments(!showComments)
+            console.log(workout.comments[0])}}>
+            {showComments ? 'Hide Comments' : 'Show Comments'}
+          </button>
         </>
       )}
+
+      
+
+      {showComments && (
+        <>
+          <div className="comments">
+          {workout.comments.map((comment) => (
+            <div key={comment._id} className="comment">
+              <h5>{getEmailCharactersBeforeAtSymbol(comment.user_id)}</h5>
+              <p>{comment.text}</p>
+              <span>Posted: {formatDistanceToNow(new Date(comment.createdAt), {
+              includeSeconds: true,
+            })}{' '}
+            ago</span>
+              {/* Add additional comment details as needed */}
+            </div>
+          ))}
+          </div>
+          <div className="add-comment">
+            <label>Add New Comment:</label>
+            <input
+              type="text"
+              placeholder="Add a comment..."
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <button onClick={handleAddComment}>Submit</button>
+          </div>
+        </>
+        
+      )}
+
+      
     </div>
   );
 };

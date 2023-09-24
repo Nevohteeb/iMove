@@ -20,6 +20,7 @@ const Signup = () => {
         <label>Email:</label>
         <input
             type = "email"
+            placeholder= "New Email"
             onChange = {(e) => setEmail(e.target.value)}
             value = {email}
         />
@@ -27,9 +28,12 @@ const Signup = () => {
         <label>Password:</label>
         <input
             type = "password"
+            placeholder= "New Password"
             onChange = {(e) => setPassword(e.target.value)}
             value = {password}
         />
+
+        <p>Please note password must contain:<br></br>- min 8 characters<br></br>- 1 uppercase<br></br>- 1 lowercase<br></br>- 1 symbol</p>
 
         <button disabled={isLoading}>Sign Up</button>
         {error && <div className="error">{error}</div>}

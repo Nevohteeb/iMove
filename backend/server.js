@@ -1,10 +1,6 @@
-// require and use dotenv
 require('dotenv').config();
-// bring in credentials from the .env file
 const mongoUsername = process.env.MONGODB_USERNAME
 const mongoPassword = process.env.MONGODB_PASSWORD
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
@@ -12,10 +8,7 @@ const app = express();
 // allow cross origin requests
 const cors = require('cors');
 
-
-// Vite - localhost:5173 (we dont want the ports(5173) to be the same)
 const port = 4000
-// Backend will be localhost:4000
 
 app.use(express.json())
 // Call on Express to use CORS
@@ -24,6 +17,8 @@ app.use(cors())
 // import routes
 const workoutRoutes = require("./routes/workouts");
 const userRoutes = require("./routes/user");
+const commentRoutes = require("./routes/commentRoutes")
+
 
 // log the path and method of each request
 app.use((req, res, next) => {
@@ -34,6 +29,7 @@ app.use((req, res, next) => {
 // Attach our route to our app (express)
 app.use('/api/workouts/', workoutRoutes);
 app.use ('/api/user', userRoutes);
+app.use('/api/comments', commentRoutes); // Use the comment routes
 // Serve static files fromupblic/uplaods
 app.use('/public/uploads', express.static('public/uploads'))
 

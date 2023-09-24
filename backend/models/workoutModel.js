@@ -26,7 +26,13 @@ const workoutSchema = new Schema({
     image: {
         type: String,
         default: null
-    }
+    },
+    comments: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Comment', // Reference the Comment model
+        },
+    ]
 }, {timestamps: true})
 
 module.exports = mongoose.model("Workout", workoutSchema)

@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext';
+import {useAddFormContext} from "../hooks/useAddFormContext"
+
+const baseURL = import.meta.env.VITE_API_BASE_URL
 
 const WorkoutForm = () => {
     // Bring in the dispatch
     const {dispatch} = useWorkoutsContext()
+    const {dispatchAdd} = useAddFormContext()
 
     // Form input state variables
     const [title, setTitle] = useState('');
@@ -40,7 +44,7 @@ const WorkoutForm = () => {
         formData.append('image', image);
 
         try {
-            const response = await axios.post('http://localhost:4000/api/workouts', formData, {
+            const response = await axios.post(`${baseURL}/workouts`, formData, {
                 headers: {
                     // 'Content-Type': 'application/json' // telling it to use and expect json
                     'Content-Type': 'multipart/form-data'
@@ -54,7 +58,8 @@ const WorkoutForm = () => {
             setError(null);
             console.log('New Workout Added!', response.data);
 
-            dispatch({type:"CREATE_WORKOUTS", payload: response.data})
+            dispatch({type:"CREATE_WORKOUT", payload: response.data})
+            dispatchAdd({type: 'CLOSE_ADD'})
 
         } catch (error) {
             console.error(error);
@@ -64,6 +69,10 @@ const WorkoutForm = () => {
 
   return (
     <form className='create' onSubmit={handleSubmit}>
+        <button className="close-button" onClick={(e) => {
+          e.preventDefault()
+          dispatchAdd({type: 'CLOSE_ADD'})
+        }}><i className="fa-solid fa-xmark"></i></button>
         <h3>Add a New Workout: </h3>
 
         <label>Exercise Title</label>

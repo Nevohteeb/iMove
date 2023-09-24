@@ -2,19 +2,25 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
+import {useAddFormContext} from "../hooks/useAddFormContext"
 
 // Import components
 import WorkoutDetails from "../components/WorkoutDetails";
 import WorkoutForm from "../components/WorkoutForm";
 
+// API base url
+const baseURL = import.meta.env.VITE_API_BASE_URL
+
 const Home = () => {
   // const [workouts, setWorkouts] = useState([])
   const {workouts, dispatch} = useWorkoutsContext()
+  const {isAddFormVisible, dispatchAdd} = useAddFormContext()
   const [myWorkouts, setMyWorkouts] = useState(null)
+  const [addOpen, setAddOpen] = useState(false)
 
   useEffect(() => {
     const fetchWorkouts = async () => {
-      const response = await axios.get('http://localhost:4000/api/workouts')
+      const response = await axios.get(`${baseURL}/workouts`)
 
       // check response status is OK (200)
       if (response.status === 200) {
@@ -35,11 +41,19 @@ const Home = () => {
     setMyWorkouts(null)
   }
 
+  const handleAddOpen = () => {
+    dispatchAdd({type: 'OPEN_ADD'})
+  }
+
   return (
     <div className='home'>
+      <div className="home-buttons">
+        <button onClick={handleMyWorkouts}>My Workouts</button>
+        <button onClick={handleAllWorkouts}>All Workouts</button>
+        <button onClick={handleAddOpen}><i className="fa-solid fa-plus"></i> Add Workout</button>
+      </div>
+      {isAddFormVisible && <WorkoutForm/>}
       <div className="workouts">
-        <button onClick={handleMyWorkouts}>My workouts</button>
-        <button onClick={handleAllWorkouts}>All workouts</button>
         {/* if workouts exist - map over the array */}
         {myWorkouts ? (
           workouts && workouts.map((workout) => {
@@ -61,7 +75,6 @@ const Home = () => {
           })
         ) }
       </div>
-      <WorkoutForm/>
     </div>
   )
 }

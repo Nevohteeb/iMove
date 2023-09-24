@@ -10,7 +10,7 @@ import Login from './pages/Login';
 
 // Components
 import Navbar from './components/Navbar';
-import SingleWorkout from './pages/SingleWorkout';
+import Footer from './components/Footer';
 
 function App() {
   const {user} = useAuthContext()
@@ -19,6 +19,11 @@ function App() {
     <div className='App'>
       <BrowserRouter>
         <Navbar/>
+        <div className="motivate">
+          <h2>INSPIRE</h2>
+          <h2 classname="primary">MOTIVATE</h2>
+          <h2 className="hover">SUCCEED</h2>
+        </div>
         <div className='pages'>
           <Routes>
             {/* if we have a user show home, else go to login */}
@@ -27,9 +32,9 @@ function App() {
             <Route path='/login' element={!user ? <Login/> : <Navigate to="/"/>}/>
             {/* if we dont have a user show signup, if we do show home */}
             <Route path='/signup' element={!user ? <Signup/> : <Navigate to="/"/>}/>
-            <Route path='/:id' element={user ? <SingleWorkout/> : <Navigate to="/login"/>}/>
           </Routes>
         </div>
+        <Footer/>
       </BrowserRouter>
     </div>
   )
