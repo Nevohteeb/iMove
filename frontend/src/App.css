@@ -145,6 +145,14 @@ header a:hover {
   border: 4px solid var(--primary);
   padding: 20px;
   margin: 30px 0px;
+  height: 550px;
+}
+
+.workout-details.expanded {
+  /* Add styling to set a fixed height when comments are shown */
+  height: auto; /* Adjust this height to your preference */
+  overflow-y: auto; /* Add a vertical scrollbar if content overflows the fixed height */
+  transition: max-height 0.3s ease-in-out; /* Add a smooth transition effect */
 }
 
 .workout-details h4 {

@@ -95,9 +95,10 @@ const getEmailCharactersBeforeAtSymbol = (email) => {
   return parts.length > 1 ? parts[0] : '';
 };
 
+const workoutCardClassName = `workout-details ${showComments ? 'expanded' : ''}`;
 
   return (
-    <div className="workout-details">
+    <div className={workoutCardClassName}>
       {isEditing ? (
         <div className='edit-modal'>
           <label>Edit Exercise Title:</label>
