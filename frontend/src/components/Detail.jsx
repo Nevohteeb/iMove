@@ -6,6 +6,9 @@ import { useParams } from 'react-router-dom'
 // react-icons
 import {IoMdArrowRoundBack} from 'react-icons/io'
 
+const baseURL = import.meta.env.VITE_API_BASE_URL
+const appURL = import.meta.env.VITE_APP_URL
+
 const DetailPage = () => {
   const {dispatch} = useProjectsContext()
   const [project, setProject] = useState(null)
@@ -21,7 +24,7 @@ const DetailPage = () => {
    const [editDescription, setEditDescription] = useState(null)
 
   useEffect(() => {
-    axios.get(`http://localhost:4000/api/projects/${id}`)
+    axios.get(`${baseURL}/projects/${id}`)
     .then((res) => {
       console.log(res.data);
       setProject(res.data[0])
@@ -61,7 +64,7 @@ const DetailPage = () => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:4000/api/projects/${project._id}`,
+        `${baseURL}/projects/${project._id}`,
         updateProject
       )
       const updatedData = response.data
@@ -77,7 +80,7 @@ const DetailPage = () => {
   }
 
   const handleDelete = async() => {
-    const response = await axios.delete(`http://localhost:4000/api/projects/${project._id}`)
+    const response = await axios.delete(`${baseURL}/projects/${project._id}`)
     const json = await response.data
     
     if(response.status === 200) {
@@ -135,7 +138,7 @@ const DetailPage = () => {
         <p>Project Owner: {project.user_id}</p>
         {project.image && (
           <img
-            src = {`http://localhost:4000/public/uploads/${project.image}`}
+            src = {`${appURL}/public/uploads/${project.image}`}
             alt = {project.title}
           />
         )}

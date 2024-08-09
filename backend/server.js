@@ -34,7 +34,7 @@ app.use('/api/comments', commentRoutes); // Use the comment routes
 app.use('/public/uploads', express.static('public/uploads'))
 
 // Mongo connection string
-const mongoURI = `mongodb+srv://${mongoUsername}:${mongoPassword}@cluster0.dkmw5xl.mongodb.net/?retryWrites=true&w=majority`
+const mongoURI = `mongodb+srv://${mongoUsername}:${mongoPassword}@cluster0.0zscr9m.mongodb.net/?retryWrites=true&w=majority`
 
 // Sets up the browser - defined what will be shown in the browser
 app.get('/', (req, res) => {
