@@ -3,9 +3,9 @@ import axios from 'axios';
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL
-const bucket = import.meta.env.VITE_AWS_BUCKET_NAME
-const region = import.meta.env.VITE_AWS_REGION
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+const bucket = import.meta.env.VITE_AWS_BUCKET_NAME;
+const region = import.meta.env.VITE_AWS_REGION;
 
 const WorkoutDetails = ({ workout }) => {
   const { dispatch } = useWorkoutsContext();
@@ -74,12 +74,10 @@ const WorkoutDetails = ({ workout }) => {
         );
 
         if (response.status === 201) {
-            // Update the component state to include the new comment
             const newComment = response.data;
             const updatedComments = [...workout.comments, newComment];
             const updatedWorkout = { ...workout, comments: updatedComments };
 
-            // Dispatch the updated workout data
             dispatch({ type: 'UPDATE_WORKOUT', payload: updatedWorkout });
 
             setCommentText('');
@@ -87,16 +85,15 @@ const WorkoutDetails = ({ workout }) => {
     } catch (error) {
         console.error('Error Adding Comment: ', error);
     }
-};
+  };
 
-// Function to split the email address
-const getEmailCharactersBeforeAtSymbol = (email) => {
-  const delimiter = '@';
-  const parts = email.split(delimiter);
-  return parts.length > 1 ? parts[0] : '';
-};
+  const getEmailCharactersBeforeAtSymbol = (email) => {
+    const delimiter = '@';
+    const parts = email.split(delimiter);
+    return parts.length > 1 ? parts[0] : '';
+  };
 
-const workoutCardClassName = `workout-details ${showComments ? 'expanded' : ''}`;
+  const workoutCardClassName = `workout-details ${showComments ? 'expanded' : ''}`;
 
   return (
     <div className={workoutCardClassName}>
@@ -116,7 +113,7 @@ const workoutCardClassName = `workout-details ${showComments ? 'expanded' : ''}`
             onChange={(e) => setEditLoad(e.target.value)}
           />
 
-          <label>Edit Reps</label>
+          <label>Edit Reps:</label>
           <input
             type='number'
             value={editReps}
@@ -129,13 +126,13 @@ const workoutCardClassName = `workout-details ${showComments ? 'expanded' : ''}`
       ) : (
         <>
           <h4>{workout.title}</h4>
-          {workout.image && (
-            <img 
-              className='workout-image' 
-              src={`https://${bucket}.s3.${region}.amazonaws.com/${workout.image}`} // S3 URL
-              alt={workout.title}
-            />
-          )}
+          <img 
+            className='workout-image' 
+            src={workout.image 
+              ? `https://${bucket}.s3.${region}.amazonaws.com/${workout.image}` 
+              : '/img/No_Image_Available.jpg'} // Online placeholder image
+            alt={workout.title}
+          />
           <p>
             <strong>Weight (kg):</strong> {workout.load}
           </p>
@@ -163,29 +160,27 @@ const workoutCardClassName = `workout-details ${showComments ? 'expanded' : ''}`
             </>
           )}
           <button onClick={() => {
-            setShowComments(!showComments)
-            console.log(workout.comments[0])}}>
+            setShowComments(!showComments);
+            console.log(workout.comments[0]);
+          }}>
             {showComments ? 'Hide Comments' : 'Show Comments'}
           </button>
         </>
       )}
 
-      
-
       {showComments && (
         <>
           <div className="comments">
-          {workout.comments.map((comment) => (
-            <div key={comment._id} className="comment">
-              <h5>{getEmailCharactersBeforeAtSymbol(comment.user_id)}</h5>
-              <p>{comment.text}</p>
-              <span>Posted: {formatDistanceToNow(new Date(comment.createdAt), {
-              includeSeconds: true,
-            })}{' '}
-            ago</span>
-              {/* Add additional comment details as needed */}
-            </div>
-          ))}
+            {workout.comments.map((comment) => (
+              <div key={comment._id} className="comment">
+                <h5>{getEmailCharactersBeforeAtSymbol(comment.user_id)}</h5>
+                <p>{comment.text}</p>
+                <span>Posted: {formatDistanceToNow(new Date(comment.createdAt), {
+                  includeSeconds: true,
+                })}{' '}
+                ago</span>
+              </div>
+            ))}
           </div>
           <div className="add-comment">
             <label>Add New Comment:</label>
@@ -198,10 +193,7 @@ const workoutCardClassName = `workout-details ${showComments ? 'expanded' : ''}`
             <button onClick={handleAddComment}>Submit</button>
           </div>
         </>
-        
       )}
-
-      
     </div>
   );
 };

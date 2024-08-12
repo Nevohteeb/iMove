@@ -21,7 +21,7 @@ const Navbar = () => {
     <header>
       <div className='container'>
         <Link to="/">
-          <img className="logo" src="/public/gm.png" alt="" />
+          <img className="logo" src="gm.png" alt="" />
         </Link>
         <nav>
           {user && (
