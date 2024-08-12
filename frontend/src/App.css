@@ -136,7 +136,20 @@ header a:hover {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 2em;
+}
+
+.no-workouts {
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 18px;
+  background-color: #171616;
+  padding: 10px;
+  border-radius: 8px;
+  border: 3px solid var(--primary);
 }
 
 .workout-details {
