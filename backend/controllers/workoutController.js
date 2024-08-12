@@ -4,10 +4,9 @@ const mongoose = require("mongoose");
 // Get all workouts with comments populated
 const getWorkouts = async (req, res) => {
     try {
-        // Find all workouts and populate the 'comments' array with actual comment documents
         const workouts = await Workout.find({}).populate({
             path: 'comments',
-            model: 'Comment' // Reference the Comment model
+            model: 'Comment'
         }).sort({ createdAt: -1 });
 
         res.status(200).json(workouts);
@@ -26,10 +25,9 @@ const getWorkout = async (req, res) => {
     }
 
     try {
-        // Find the workout by ID and populate the 'comments' array with actual comment documents
         const workout = await Workout.findById(id).populate({
             path: 'comments',
-            model: 'Comment' // Reference the Comment model
+            model: 'Comment'
         });
 
         if (!workout) {
@@ -46,7 +44,7 @@ const getWorkout = async (req, res) => {
 // Create a New Workout
 const createWorkout = async (req, res) => {
     const { title, load, reps, user_id } = req.body;
-    const imageFilename = req.file ? req.file.filename : null;
+    const imageKey = req.file ? req.file.key : null; // Save S3 key instead of filename
 
     try {
         const workout = await Workout.create({
@@ -54,13 +52,14 @@ const createWorkout = async (req, res) => {
             load,
             reps,
             user_id,
-            image: imageFilename
+            image: imageKey // Save the S3 key
         });
         res.status(200).json(workout);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Delete a workout
 const deleteWorkout = async (req, res) => {

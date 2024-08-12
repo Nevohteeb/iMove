@@ -1,48 +1,49 @@
 const express = require("express");
-const multer = require("multer")
-const path = require("path")
+const multer = require("multer");
+const { S3Client } = require("@aws-sdk/client-s3");
+const multerS3 = require("multer-s3");
+const path = require("path");
 
-// Configure Multer Storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'public/uploads'); // Store uploads in this directory
+// Initialize the S3 client with your credentials and region
+const s3 = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const ext = path.extname(file.originalname);
-      cb(null, uniqueSuffix + ext); // Use unique filenames
-    },
-  });
+});
 
-const upload = multer({ storage }) 
+// Configure Multer Storage with S3
+const upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'mygymmonkey', // Replace with your S3 bucket name
+        key: (req, file, cb) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            const ext = path.extname(file.originalname);
+            cb(null, uniqueSuffix + ext); // Use unique filenames
+        }
+    })
+});
 
-// use express router:
+// Use express router
 const router = express.Router();
 
-// import out controller functions
+// Import controller functions
 const {
     getWorkouts,
     getWorkout,
     createWorkout,
     deleteWorkout,
     updateWorkout
-} = require("../controllers/workoutController")
+} = require("../controllers/workoutController");
 
-// set up route for each required route
-// GET all workouts
-router.get("/", getWorkouts)
-
-// GET single workout
-router.get("/:id", getWorkout)
-
-// POST a new workout
-router.post('/', upload.single('image'), createWorkout)
-
-// DELETE a new workout
-router.delete('/:id', deleteWorkout)
-
-// UPDATE an existing workout
-router.patch('/:id', updateWorkout)
+// Set up routes
+router.get("/", getWorkouts); // GET all workouts
+router.get("/:id", getWorkout); // GET single workout
+router.post('/', upload.single('image'), createWorkout); // POST a new workout
+router.delete('/:id', deleteWorkout); // DELETE a workout
+router.patch('/:id', updateWorkout); // UPDATE a workout
 
 // Export the module
 module.exports = router;

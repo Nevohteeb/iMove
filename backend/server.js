@@ -31,7 +31,7 @@ app.use('/api/workouts/', workoutRoutes);
 app.use ('/api/user', userRoutes);
 app.use('/api/comments', commentRoutes); // Use the comment routes
 // Serve static files fromupblic/uplaods
-app.use('/public/uploads', express.static('public/uploads'))
+// app.use('/public/uploads', express.static('public/uploads'))
 
 // Mongo connection string
 const mongoURI = `mongodb+srv://${mongoUsername}:${mongoPassword}@cluster0.0zscr9m.mongodb.net/?retryWrites=true&w=majority`
