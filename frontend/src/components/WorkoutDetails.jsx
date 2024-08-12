@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
-const appURL = import.meta.env.VITE_APP_URL
+const bucket = import.meta.env.VITE_AWS_BUCKET_NAME
+const region = import.meta.env.VITE_AWS_REGION
 
 const WorkoutDetails = ({ workout }) => {
   const { dispatch } = useWorkoutsContext();
@@ -131,7 +132,7 @@ const workoutCardClassName = `workout-details ${showComments ? 'expanded' : ''}`
           {workout.image && (
             <img 
               className='workout-image' 
-              src={`${appURL}/public/uploads/${workout.image}`}
+              src={`https://${bucket}.s3.${region}.amazonaws.com/${workout.image}`} // S3 URL
               alt={workout.title}
             />
           )}

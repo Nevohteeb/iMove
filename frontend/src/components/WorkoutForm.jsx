@@ -1,42 +1,27 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext';
-import {useAddFormContext} from "../hooks/useAddFormContext"
+import { useAddFormContext } from '../hooks/useAddFormContext';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const WorkoutForm = () => {
-    // Bring in the dispatch
-    const {dispatch} = useWorkoutsContext()
-    const {dispatchAdd} = useAddFormContext()
+    const { dispatch } = useWorkoutsContext();
+    const { dispatchAdd } = useAddFormContext();
 
-    // Form input state variables
     const [title, setTitle] = useState('');
     const [load, setLoad] = useState('');
     const [reps, setReps] = useState('');
-    // set an error state
     const [error, setError] = useState(null);
-    // set state for image uplaod
     const [image, setImage] = useState(null);
 
-    // Handle Submit - Post request to our workout end point
-    // prevent the default form button behaviour
-    // data - create an object called workout and pass our state values into it
-    // axios - send the data object up as the request payload
-    // header - tells the server we are using JSON data
-    // set error state - so we can show error to user later on
-    // reset the values of the form if the request is successful
-
     const handleSubmit = async (e) => {
-        e.preventDefault() // stop button from refreshing the page
+        e.preventDefault();
 
-        const user = JSON.parse(localStorage.getItem('user'))
-        const user_id = user.email
+        const user = JSON.parse(localStorage.getItem('user'));
+        const user_id = user.email;
 
-        // data object to send as payload
-        // const workout = {title, load, reps, user_id}
-
-        const formData = new FormData()
+        const formData = new FormData();
         formData.append('title', title);
         formData.append('load', load);
         formData.append('reps', reps);
@@ -46,70 +31,67 @@ const WorkoutForm = () => {
         try {
             const response = await axios.post(`${baseURL}/workouts`, formData, {
                 headers: {
-                    // 'Content-Type': 'application/json' // telling it to use and expect json
                     'Content-Type': 'multipart/form-data'
                 }
-            })
+            });
 
-            // Clear values
             setTitle('');
             setLoad('');
             setReps('');
             setError(null);
             console.log('New Workout Added!', response.data);
 
-            dispatch({type:"CREATE_WORKOUT", payload: response.data})
-            dispatchAdd({type: 'CLOSE_ADD'})
+            dispatch({ type: "CREATE_WORKOUT", payload: response.data });
+            dispatchAdd({ type: 'CLOSE_ADD' });
 
         } catch (error) {
             console.error(error);
             setError(error.message);
         }
-    }
+    };
 
-  return (
-    <form className='create' onSubmit={handleSubmit}>
-        <button className="close-button" onClick={(e) => {
-          e.preventDefault()
-          dispatchAdd({type: 'CLOSE_ADD'})
-        }}><i className="fa-solid fa-xmark"></i></button>
-        <h3>Add a New Workout: </h3>
+    return (
+        <form className='create' onSubmit={handleSubmit}>
+            <button className="close-button" onClick={(e) => {
+                e.preventDefault();
+                dispatchAdd({ type: 'CLOSE_ADD' });
+            }}>
+                <i className="fa-solid fa-xmark"></i>
+            </button>
+            <h3>Add a New Workout:</h3>
 
-        <label>Exercise Title</label>
-        <input
-          type='text'
-          onChange={(e) => setTitle(e.target.value)}
-          value={title}
-        >
-        </input>
+            <label>Exercise Title</label>
+            <input
+                type='text'
+                onChange={(e) => setTitle(e.target.value)}
+                value={title}
+            />
 
-        <label>Load (in kg): </label>
-        <input
-          type='text'
-          onChange={(e) => setLoad(e.target.value)}
-          value={load}
-        >
-        </input>
+            <label>Load (in kg):</label>
+            <input
+                type='text'
+                onChange={(e) => setLoad(e.target.value)}
+                value={load}
+            />
 
-        <label>Reps: </label>
-        <input
-          type='text'
-          onChange={(e) => setReps(e.target.value)}
-          value={reps}
-        >
-        </input>
+            <label>Reps:</label>
+            <input
+                type='text'
+                onChange={(e) => setReps(e.target.value)}
+                value={reps}
+            />
 
-        <label>Upload Image:</label>
-        <input
-          type='file'
-          accpet='image/*'
-          onChange={(e) => setImage(e.target.files[0])}
-        />
+            <label>Upload Image:</label>
+            <input
+                type='file'
+                accept='image/*'
+                onChange={(e) => setImage(e.target.files[0])}
+            />
 
-        <button>Add Workout</button>
-        {error && <div className='error'>{error}</div>}
-    </form>
-  )
-}
+            <button>Add Workout</button>
+            {error && <div className='error'>{error}</div>}
+        </form>
+    );
+};
 
-export default WorkoutForm
+export default WorkoutForm;
