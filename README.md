@@ -1,3 +1,5 @@
+[Homepage Screenshot](/imove.jpg)
+
 # 📌 iMove GymMonkey - Gym Workout App
 https://i-move-kisy.vercel.app/
 
